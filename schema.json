@@ -1,0 +1,21 @@
+{
+  "type": "component",
+  "metadata": {
+    "svelteMajor": 5
+  },
+  "schema": {
+    "name": "bb-component-Skeleton",
+    "friendlyName": "Click Counter",
+    "description": "A simple button that increments a counter on click",
+    "icon": "lightbulb",
+    "styles": ["size", "padding", "background", "border"],
+    "settings": [
+      {
+        "type": "text",
+        "key": "buttonLabel",
+        "label": "Button Label",
+        "defaultValue": "Click me"
+      }
+    ]
+  }
+}
