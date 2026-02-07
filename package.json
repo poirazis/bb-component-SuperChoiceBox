@@ -1,12 +1,13 @@
 {
   "type": "module",
   "name": "bb-component-SuperChoiceBox",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Super Choice Box component for Budibase",
   "packageManager": "bun@1.0.0",
   "license": "MIT",
   "svelte": "index.js",
   "module": "dist/plugin.min.js",
+  "author": "Michael Poirazi",
   "scripts": {
     "build": "vite build",
     "watch": "vite build --watch"

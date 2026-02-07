@@ -19,6 +19,7 @@
     value = "",
     selectedBgColor = "",
     selectedColor = "",
+    children,
   }: {
     optionsSource?: string;
     dataProvider?: any;
@@ -31,6 +32,7 @@
     value?: string;
     disabled?: boolean;
     onChange?: (value: string) => void;
+    children?: any;
   } = $props();
 
   let optionList = $derived(
@@ -82,7 +84,7 @@
 >
   {#if optionList.length < 1 && $builderStore.inBuilder}
     <div class="super-wrapper empty" use:styleable={$component.styles}>
-      No options available
+      No options found. Please add options or connect a data source.
     </div>
   {:else}
     <div
@@ -91,9 +93,10 @@
       class:horizontal={orientation === "horizontal"}
       class:grid={orientation === "grid"}
     >
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
       {#each optionList as option}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore event_directive_deprecated -->
         <div
           class="option"
           class:selected={value == option.value}
@@ -119,7 +122,7 @@
               scope={ContextScopes.Local}
             >
               <div class="contents">
-                <slot />
+                {@render children()}
               </div>
             </Provider>
           {/if}
@@ -190,7 +193,7 @@
       in srgb,
       var(--selected-bg-color, --spectrum-global-color-gray-200) 50%,
       transparent
-    );
+    ) !important;
   }
 
   .option:hover .ph-circle {
@@ -213,7 +216,7 @@
     background-color: var(
       --selected-bg-color,
       --spectrum-global-color-gray-200
-    );
+    ) !important;
   }
 
   .option .title {
@@ -251,6 +254,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
   }
 
   .ph-circle {
