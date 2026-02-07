@@ -1,7 +1,8 @@
 <script lang="ts">
   import { getContext } from "svelte";
 
-  const { styleable, Provider } = getContext("sdk");
+  const { styleable, Provider, ContextScopes, builderStore } =
+    getContext("sdk");
   const component = getContext("component");
 
   let {
@@ -15,9 +16,9 @@
     staticOptions,
     onChange,
     disabled,
-    value = $bindable(""),
-    selectedBgColor = $bindable(""),
-    selectedColor = $bindable(""),
+    value = "",
+    selectedBgColor = "",
+    selectedColor = "",
   }: {
     optionsSource?: string;
     dataProvider?: any;
@@ -37,9 +38,10 @@
       ? options
           .split(",")
           .map((s) => s.trim())
-          .map((v) => ({ value: v, label: v }))
+          .map((v) => ({ value: v, label: v, row: null }))
       : optionsSource == "data" && dataProvider
         ? dataProvider?.rows?.map((row) => ({
+            row: row,
             value: valueField ? row[valueField] : "No value Field Selected",
             label:
               valueField && labelField
@@ -49,17 +51,20 @@
                   : "No value Field Selected",
           }))
         : optionsSource == "static" && staticOptions?.length
-          ? staticOptions
+          ? staticOptions.map((opt) => ({
+              ...opt,
+              row: null,
+            }))
           : [],
   );
+
+  let hasChildren = $derived($component.children > 0);
 
   $effect(() => {
     if (!(value && optionList.some((o) => o.value === value))) {
       value = optionList[0]?.value || "";
     }
   });
-
-  $effect(() => console.log(dataProvider, optionList));
 </script>
 
 <Provider data={{ value }} />
@@ -75,42 +80,53 @@
     ? `--columns: ${columns}`
     : undefined}
 >
-  <div
-    class="super-wrapper"
-    class:vertical={orientation === "vertical"}
-    class:horizontal={orientation === "horizontal"}
-    class:grid={orientation === "grid"}
-  >
-    {#each optionList as option}
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div
-        class="option"
-        class:selected={value == option.value}
-        use:styleable={$component.styles}
-        on:click={() => {
-          if (disabled) return;
-          value = option.value;
-          onChange?.({ value });
-        }}
-      >
-        <div class="title">
-          <span>{option.label}</span>
+  {#if optionList.length < 1 && $builderStore.inBuilder}
+    <div class="super-wrapper empty" use:styleable={$component.styles}>
+      No options available
+    </div>
+  {:else}
+    <div
+      class="super-wrapper"
+      class:vertical={orientation === "vertical"}
+      class:horizontal={orientation === "horizontal"}
+      class:grid={orientation === "grid"}
+    >
+      {#each optionList as option}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <div
+          class="option"
+          class:selected={value == option.value}
+          use:styleable={$component.styles}
+          on:click={() => {
+            if (disabled) return;
+            value = option.value;
+            onChange?.({ value });
+          }}
+        >
+          <div class="title">
+            <span>{option.label}</span>
 
-          {#if value == option.value}
-            <i class="ph ph-check-circle"></i>
-          {:else}
-            <i class="ph ph-circle"></i>
+            {#if value == option.value}
+              <i class="ph ph-check-circle"></i>
+            {:else}
+              <i class="ph ph-circle"></i>
+            {/if}
+          </div>
+          {#if hasChildren}
+            <Provider
+              data={{ value, optionValue: option.value, optionRow: option.row }}
+              scope={ContextScopes.Local}
+            >
+              <div class="contents">
+                <slot />
+              </div>
+            </Provider>
           {/if}
         </div>
-        {#if $component.children > 0}
-          <div class="contents">
-            <slot />
-          </div>
-        {/if}
-      </div>
-    {/each}
-  </div>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -120,6 +136,16 @@
     align-items: stretch;
     gap: 0.5rem;
     overflow: hidden;
+  }
+
+  .super-wrapper.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--spectrum-global-color-gray-500);
+    font-style: italic;
+    border: 1px dashed var(--spectrum-global-color-gray-500);
+    padding: 1rem;
   }
 
   .super-wrapper.horizontal {

@@ -18,6 +18,18 @@
         "values": [
           { "key": "value", "label": "Selected Value", "type": "text" }
         ]
+      },
+      {
+        "type": "static",
+        "scope": "local",
+        "values": [
+          { "key": "optionValue", "label": "Option Value", "type": "text" },
+          {
+            "key": "optionRow",
+            "label": "Option Row",
+            "type": "object"
+          }
+        ]
       }
     ],
     "settings": [
