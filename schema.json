@@ -4,17 +4,147 @@
     "svelteMajor": 5
   },
   "schema": {
-    "name": "bb-component-Skeleton",
-    "friendlyName": "Click Counter",
-    "description": "A simple button that increments a counter on click",
-    "icon": "lightbulb",
+    "name": "bb-component-SuperChoiceBox",
+    "friendlyName": "Super Choice Box",
+    "description": "A choice box component for selecting from a list of options",
+    "icon": "list",
     "styles": ["size", "padding", "background", "border"],
+    "hasChildren": true,
+    "showEmptyState": false,
+    "context": [
+      {
+        "type": "static",
+        "scope": "global",
+        "values": [
+          { "key": "value", "label": "Selected Value", "type": "text" }
+        ]
+      },
+      {
+        "type": "static",
+        "scope": "local",
+        "values": [
+          { "key": "optionValue", "label": "Option Value", "type": "text" },
+          {
+            "key": "optionRow",
+            "label": "Option Row",
+            "type": "object"
+          }
+        ]
+      }
+    ],
     "settings": [
       {
+        "type": "select",
+        "key": "optionsSource",
+        "label": "Options Source",
+        "options": [
+          { "label": "Data", "value": "data" },
+          { "label": "Static", "value": "static" },
+          { "label": "String", "value": "custom" }
+        ],
+        "defaultValue": "custom"
+      },
+      {
+        "type": "dataProvider",
+        "key": "dataProvider",
+        "label": "Data Provider",
+        "dependsOn": {
+          "setting": "optionsSource",
+          "value": "data"
+        }
+      },
+      {
+        "type": "field",
+        "key": "valueField",
+        "label": "Value Field",
+        "dependsOn": {
+          "setting": "optionsSource",
+          "value": "data"
+        }
+      },
+      {
+        "type": "field",
+        "key": "labelField",
+        "label": "Label Field",
+        "dependsOn": {
+          "setting": "optionsSource",
+          "value": "data"
+        }
+      },
+      {
+        "type": "options",
+        "key": "staticOptions",
+        "label": "Static Options",
+        "dependsOn": {
+          "setting": "optionsSource",
+          "value": "static"
+        }
+      },
+      {
         "type": "text",
-        "key": "buttonLabel",
-        "label": "Button Label",
-        "defaultValue": "Click me"
+        "key": "options",
+        "label": "Options",
+        "defaultValue": "Option 1,Option 2,Option 3",
+        "dependsOn": {
+          "setting": "optionsSource",
+          "value": "custom"
+        }
+      },
+      {
+        "type": "text",
+        "key": "value",
+        "label": "Value",
+        "defaultValue": ""
+      },
+      {
+        "type": "radio",
+        "key": "orientation",
+        "label": "Orientation",
+        "options": [
+          { "label": "Vertical", "value": "vertical" },
+          { "label": "Horizontal", "value": "horizontal" },
+          { "label": "Grid", "value": "grid" }
+        ],
+        "defaultValue": "vertical"
+      },
+      {
+        "type": "number",
+        "key": "columns",
+        "label": "Columns",
+        "defaultValue": 2,
+        "dependsOn": {
+          "setting": "orientation",
+          "value": "grid"
+        }
+      },
+      {
+        "type": "boolean",
+        "key": "disabled",
+        "label": "Disabled",
+        "defaultValue": false
+      },
+      {
+        "type": "event",
+        "key": "onChange",
+        "label": "On Change",
+        "context": [
+          {
+            "key": "value",
+            "label": "Value"
+          }
+        ]
+      },
+      {
+        "tag": "style",
+        "type": "color",
+        "key": "selectedBgColor",
+        "label": "Selected Bg"
+      },
+      {
+        "tag": "style",
+        "type": "color",
+        "key": "selectedColor",
+        "label": "Text Color"
       }
     ]
   }
